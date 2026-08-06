@@ -13,10 +13,10 @@ import { PropertyData } from "@/types/responses";
 const PROPERTY_TYPES = ["All", "Open Plots", "Apartments", "Gated Villas", "Gated Communities"];
 
 const PLOT_OPTIONS = [
-  { sqft: "0.4 sq.ft", price: 2500 },
-  { sqft: "0.6 sq.ft", price: 3500 },
-  { sqft: "8 sq.ft", price: 4500 },
-  { sqft: "10 sq.ft", price: 5500 },
+  { sqft: "2 Cents", price: 3500 },
+  { sqft: "4 Cents", price: 4500 },
+  { sqft: "6 Cents", price: 5500 },
+  { sqft: "8 Cents", price: 6500 },
 ];
 
 // ── Plot Booking Modal ────────────────────────────────────────────────────────
@@ -55,11 +55,12 @@ function PlotBookingModal({
         {step === "select" ? (
           <>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-display text-xl font-bold text-foreground">Book Your Plot</h3>
+              <h3 className="font-display text-xl font-bold text-foreground">Advance Amount for Plot Booking</h3>
               <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
                 ✕
               </button>
             </div>
+            <p className="text-sm font-semibold text-primary mb-1">Sri Gandham & Red Sandal</p>
             <p className="text-sm text-muted-foreground mb-4">Select a plot size to proceed with payment</p>
 
             <div className="space-y-3 mb-6">
