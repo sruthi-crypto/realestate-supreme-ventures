@@ -207,8 +207,9 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
                 return obj;
             };
 
+            const { qr: _qr, ...restValues } = values;
             const payload = {
-                ...clean(values),
+                ...clean(restValues),
                 aboutUs: {
                     ...clean(values.aboutUs),
                     images: uploadedImages.map((url) => ({ url, alt: "" })),
