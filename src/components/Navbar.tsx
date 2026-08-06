@@ -1,14 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { Building2, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const role = localStorage.getItem("role");
-  const isAdmin = role === "admin";
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -16,11 +11,6 @@ const Navbar = () => {
     { to: "/", label: "Properties" },
     { to: "/about", label: "About" },
   ];
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 shadow-sm transition-shadow duration-300">
@@ -47,37 +37,7 @@ const Navbar = () => {
               )}
             </Link>
           ))}
-          {isAdmin ? (
-            <>
-              <Link
-                to="/admin"
-                className={`text-sm font-medium transition-all duration-300 relative hover:text-primary ${location.pathname === "/admin" ? "text-primary font-semibold" : "text-muted-foreground"
-                  }`}
-              >
-                Admin Panel
-                {location.pathname === "/admin" && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-accent rounded-full" />
-                )}
-              </Link>
-              <Link
-                to="/admin-users"
-                className={`text-sm font-medium transition-all duration-300 relative hover:text-primary ${location.pathname.startsWith("/admin-users") ? "text-primary font-semibold" : "text-muted-foreground"
-                  }`}
-              >
-                Admin Users
-                {location.pathname.startsWith("/admin-users") && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-accent rounded-full" />
-                )}
-              </Link>
-              <Button variant="outline" size="sm" onClick={handleLogout} className="rounded-lg hover-lift">
-                Logout
-              </Button>
-            </>
-          ) : (
-            <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-300">
-              Admin
-            </Link>
-          )}
+
         </div>
 
         {/* Mobile toggle */}
@@ -106,36 +66,7 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
-          {isAdmin ? (
-            <>
-              <Link
-                to="/admin"
-                onClick={() => setMobileOpen(false)}
-                className={`block text-sm font-medium transition-colors duration-300 py-2 px-3 rounded-lg ${location.pathname === "/admin"
-                  ? "text-primary bg-primary/10"
-                  : "text-foreground hover:text-primary hover:bg-muted"
-                  }`}
-              >
-                Admin Panel
-              </Link>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => { handleLogout(); setMobileOpen(false); }}
-                className="w-full rounded-lg"
-              >
-                Logout
-              </Button>
-            </>
-          ) : (
-            <Link
-              to="/login"
-              onClick={() => setMobileOpen(false)}
-              className="block text-sm font-medium text-foreground hover:text-primary py-2 px-3 rounded-lg hover:bg-muted transition-colors duration-300"
-            >
-              Admin
-            </Link>
-          )}
+
         </div>
       )}
     </nav>
