@@ -248,7 +248,7 @@ const Index = () => {
   useEffect(() => {
     if (getAboutSuccess) {
       const record = getAboutSuccess.data.find((d) => d.key === "aboutUs") ?? getAboutSuccess.data[0];
-      setQrCodes(record?.qr ?? []);
+      setQrCodes(record?.aboutUs?.qr ?? []);
       dispatch(cleargetAboutAction());
     }
   }, [getAboutSuccess, dispatch]);

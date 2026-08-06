@@ -130,13 +130,13 @@ export interface GetAboutResponse {
         label: string,
         value: string
       }[],
-      description: string
+      description: string,
+      qr?: {
+        url: string;
+        label?: string;
+      }[];
     },
     footer: { [key: string]: string },
-    qr?: {
-      url: string;
-      label?: string;
-    }[];
   }[],
 }
 

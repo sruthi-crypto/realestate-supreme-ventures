@@ -125,11 +125,11 @@ export interface UpdateAboutPayload {
       label?: string;
       value?: string;
     }[];
+    qr?: {
+      url: string;
+      label?: string;
+    }[];
   };
-  qr?: {
-    url: string;
-    label?: string;
-  }[];
 
   // footer?: {
   //   logoUrl?: string;

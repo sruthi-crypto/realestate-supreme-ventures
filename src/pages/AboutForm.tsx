@@ -212,8 +212,8 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
                 aboutUs: {
                     ...clean(values.aboutUs),
                     images: uploadedImages.map((url) => ({ url, alt: "" })),
+                    qr: values.qr.filter(q => q.url),
                 },
-                qr: values.qr.filter(q => q.url),
             };
 
             if (initialData) {
@@ -244,7 +244,7 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
                     since: initialData.aboutUs?.since || "",
                     highlights: initialData.aboutUs?.highlights ?? [],
                 },
-                qr: (initialData.qr ?? []).map((q: any) => ({ url: q.url || "", label: q.label || "" })),
+                qr: (initialData.aboutUs?.qr ?? []).map((q: any) => ({ url: q.url || "", label: q.label || "" })),
                 // footer: {
                 //     logoUrl: initialData.footer?.logoUrl || "",
                 //     brandName: initialData.footer?.brandName || "",
