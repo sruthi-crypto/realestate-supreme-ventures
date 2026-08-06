@@ -231,40 +231,6 @@ const Login = () => {
             )}
           </button>
         </div>
-
-        {/* Demo credentials */}
-        <div
-          className="mt-4 rounded-xl border border-border bg-background/70 px-5 py-4 animate-fade-in"
-          style={{ animationDelay: "0.4s" }}
-        >
-          <p
-            className="text-[10px] font-bold uppercase tracking-widest mb-3 text-center"
-            style={{ color: "hsl(152,55%,32%)" }}
-          >
-            Demo Credentials
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            <div
-              className="rounded-lg p-2.5 text-center"
-              style={{ background: "hsl(152,55%,32%,0.07)", border: "1px solid hsl(152,55%,32%,0.15)" }}
-            >
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Email</p>
-              <p className="text-xs font-bold font-mono" style={{ color: "hsl(152,55%,32%)" }}>
-                9988776600
-              </p>
-            </div>
-            <div
-              className="rounded-lg p-2.5 text-center"
-              style={{ background: "hsl(152,55%,32%,0.07)", border: "1px solid hsl(152,55%,32%,0.15)" }}
-            >
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Token</p>
-              <p className="text-xs font-bold font-mono" style={{ color: "hsl(152,55%,32%)" }}>
-                Test@1234
-              </p>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   );

@@ -126,6 +126,10 @@ export interface UpdateAboutPayload {
       value?: string;
     }[];
   };
+  qr?: {
+    url: string;
+    label?: string;
+  }[];
 
   // footer?: {
   //   logoUrl?: string;

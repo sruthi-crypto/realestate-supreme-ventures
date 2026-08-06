@@ -156,9 +156,8 @@ export default function sliceCreator<T extends object | undefined, R>(
   >(
     `${sliceName} / ${method}`.toUpperCase(),
     async (data = {} as T, { rejectWithValue }) => {
+      let finalEndpoint = endPoint;
       try {
-        let finalEndpoint = endPoint;
-
         // ✅ Handle FormData endpoint extraction
         if (data instanceof FormData) {
           const epFromForm = data.get("endPoint");
@@ -185,8 +184,8 @@ export default function sliceCreator<T extends object | undefined, R>(
         return response;
 
       } catch (err: any) {
-        // if 401
-        if (err.response?.status === 401) {
+        // if 401 — only force logout if it's NOT the login endpoint itself
+        if (err.response?.status === 401 && !finalEndpoint.includes("login")) {
           if (typeof window !== "undefined") {
             localStorage.clear();
             window.location.href = "/login";
@@ -199,9 +198,9 @@ export default function sliceCreator<T extends object | undefined, R>(
         }
         console.error("API Error:", err);
         const errorMessage =
-          err.response?.data?.data ??
-          err.response?.data?.error ??
           err.response?.data?.message ??
+          err.response?.data?.error ??
+          err.response?.data?.data ??
           err.message ??
           "An error occurred";
         return rejectWithValue({
@@ -240,7 +239,7 @@ export default function sliceCreator<T extends object | undefined, R>(
         state.loading = false;
         state.successData = null;
         state.error = true;
-        state.errorInfo = action.payload?.error ?? "Unknown error";
+        state.errorInfo = action.payload?.error ?? action.error?.message ?? "An error occurred";
       });
       builder.addCase(asyncAction.fulfilled, (state, action) => {
         // (state, action: PayloadAction<R | undefined>) => {

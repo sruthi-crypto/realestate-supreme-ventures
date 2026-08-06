@@ -6,11 +6,150 @@ import ProductForm from "@/components/ProductForm";
 import Modal from "@/components/Modal";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { clearGetAllPropertiesAction, getAllPropertiesAction } from "@/store/actions";
+import { clearGetAllPropertiesAction, getAllPropertiesAction, getAboutAction, cleargetAboutAction } from "@/store/actions";
 import { toast } from "sonner";
 import { PropertyData } from "@/types/responses";
 
 const PROPERTY_TYPES = ["All", "Open Plots", "Apartments", "Gated Villas", "Gated Communities"];
+
+const PLOT_OPTIONS = [
+  { sqft: "0.4 sq.ft", price: 2500 },
+  { sqft: "0.6 sq.ft", price: 3500 },
+  { sqft: "8 sq.ft", price: 4500 },
+  { sqft: "10 sq.ft", price: 5500 },
+];
+
+// ── Plot Booking Modal ────────────────────────────────────────────────────────
+function PlotBookingModal({
+  open,
+  onClose,
+  qrCodes,
+}: {
+  open: boolean;
+  onClose: () => void;
+  qrCodes: { url: string; label?: string }[];
+}) {
+  const [selected, setSelected] = useState<number | null>(null);
+  const [step, setStep] = useState<"select" | "qr">("select");
+  const [selectedQr, setSelectedQr] = useState<number>(0);
+
+  if (!open) return null;
+
+  const handleClose = () => {
+    setSelected(null);
+    setStep("select");
+    setSelectedQr(0);
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)" }}
+      onClick={handleClose}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl bg-background shadow-2xl border border-border p-6 animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {step === "select" ? (
+          <>
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-display text-xl font-bold text-foreground">Book Your Plot</h3>
+              <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
+                ✕
+              </button>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">Select a plot size to proceed with payment</p>
+
+            <div className="space-y-3 mb-6">
+              {PLOT_OPTIONS.map((opt, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSelected(i)}
+                  className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border-2 transition-all text-left ${
+                    selected === i
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/40 hover:bg-muted/40"
+                  }`}
+                >
+                  <span className="font-semibold text-foreground">{opt.sqft}</span>
+                  <span className="font-bold text-primary">₹{opt.price.toLocaleString("en-IN")}</span>
+                </button>
+              ))}
+            </div>
+
+            <button
+              disabled={selected === null}
+              onClick={() => setStep("qr")}
+              className="w-full py-3 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(135deg, hsl(152,55%,32%), hsl(145,47%,45%))" }}
+            >
+              Continue Payment
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-5">
+              <button
+                onClick={() => setStep("select")}
+                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+              >
+                ← Back
+              </button>
+              <h3 className="font-display text-lg font-bold text-foreground">Scan & Pay</h3>
+              <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground">
+                ✕
+              </button>
+            </div>
+
+            {selected !== null && (
+              <div className="text-center mb-4 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                <p className="text-sm text-muted-foreground">Selected</p>
+                <p className="font-bold text-foreground">
+                  {PLOT_OPTIONS[selected].sqft} — ₹{PLOT_OPTIONS[selected].price.toLocaleString("en-IN")}
+                </p>
+              </div>
+            )}
+
+            {qrCodes.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground text-sm">No QR codes available. Please contact admin.</div>
+            ) : (
+              <>
+                {qrCodes.length > 1 && (
+                  <div className="flex gap-2 flex-wrap justify-center mb-4">
+                    {qrCodes.map((q, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedQr(i)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                          selectedQr === i ? "bg-primary text-white border-primary" : "border-border text-muted-foreground hover:bg-muted"
+                        }`}
+                      >
+                        {q.label || `QR ${i + 1}`}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div className="flex flex-col items-center gap-3">
+                  <img
+                    src={qrCodes[selectedQr]?.url}
+                    alt={qrCodes[selectedQr]?.label || "Payment QR"}
+                    className="w-56 h-56 object-contain rounded-xl border border-border bg-white p-2 shadow-md"
+                  />
+                  {qrCodes[selectedQr]?.label && (
+                    <p className="text-sm font-semibold text-foreground">{qrCodes[selectedQr].label}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground text-center">Scan the QR code with any UPI app to complete your payment</p>
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // ── Delete Confirmation Modal ─────────────────────────────────────────────────
 function DeleteConfirmModal({
@@ -81,6 +220,8 @@ const Index = () => {
   const [editingProduct, setEditingProduct] = useState<PropertyData | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedType, setSelectedType] = useState("All");
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [qrCodes, setQrCodes] = useState<{ url: string; label?: string }[]>([]);
 
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; id: string; name: string }>({
     open: false,
@@ -95,9 +236,22 @@ const Index = () => {
     errorInfo: getPropertiesErrorInfo,
   } = useAppSelector((s) => s.getAllPropertiesReducer);
 
+  const {
+    successData: getAboutSuccess,
+  } = useAppSelector((s) => s.getAboutReducer);
+
   useEffect(() => {
     dispatch(getAllPropertiesAction());
+    dispatch(getAboutAction());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (getAboutSuccess) {
+      const record = getAboutSuccess.data.find((d) => d.key === "aboutUs") ?? getAboutSuccess.data[0];
+      setQrCodes(record?.qr ?? []);
+      dispatch(cleargetAboutAction());
+    }
+  }, [getAboutSuccess, dispatch]);
 
   useEffect(() => {
     if (getPropertiesSuccess) {
@@ -227,6 +381,26 @@ const Index = () => {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Book Your Plot — blinking CTA */}
+        <PlotBookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} qrCodes={qrCodes} />
+        <div className="mt-14 mb-4 flex justify-center">
+          <button
+            onClick={() => setBookingOpen(true)}
+            className="relative px-8 py-4 rounded-2xl text-white text-base font-bold shadow-lg overflow-hidden"
+            style={{ background: "linear-gradient(135deg, hsl(152,55%,32%), hsl(145,47%,45%))" }}
+          >
+            <span
+              className="absolute inset-0 rounded-2xl"
+              style={{
+                animation: "pulse-ring 1.6s ease-out infinite",
+                background: "hsl(152,55%,32%)",
+                opacity: 0,
+              }}
+            />
+            🏡 Book Your Plot Now
+          </button>
         </div>
 
         {/* Modal form */}

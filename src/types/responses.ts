@@ -132,7 +132,11 @@ export interface GetAboutResponse {
       }[],
       description: string
     },
-    footer: { [key: string]: string }
+    footer: { [key: string]: string },
+    qr?: {
+      url: string;
+      label?: string;
+    }[];
   }[],
 }
 

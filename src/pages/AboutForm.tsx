@@ -2,17 +2,12 @@ import { useState, useEffect } from "react";
 import {
     X,
     Info,
-    // Globe,
-    // Link2,
-    // Phone,
-    // Share2,
     Image,
     Star,
-    // ChevronDown,
-    // ChevronUp,
     Plus,
     Trash2,
     UploadCloud,
+    QrCode,
 } from "lucide-react";
 import { useFormik, FormikProvider } from "formik";
 import * as Yup from "yup";
@@ -28,7 +23,7 @@ import { toast } from "sonner";
 import { GetAboutResponse } from "@/types/responses";
 
 interface Props {
-    initialData?: GetAboutResponse["data"] | null;
+    initialData?: GetAboutResponse["data"][number] | null;
     onCancel: () => void;
 }
 
@@ -132,6 +127,7 @@ const defaultValues = {
         since: "",
         highlights: [] as { label: string; value: string }[],
     },
+    qr: [] as { url: string; label: string }[],
     // footer: {
     //     logoUrl: "",
     //     brandName: "",
@@ -175,6 +171,7 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
     // const [footerOpen, setFooterOpen] = useState(false);
     const [uploadedImages, setUploadedImages] = useState<string[]>([]);
     const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+    const [uploadingQr, setUploadingQr] = useState(false);
 
     const {
         loading: createLoading,
@@ -216,6 +213,7 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
                     ...clean(values.aboutUs),
                     images: uploadedImages.map((url) => ({ url, alt: "" })),
                 },
+                qr: values.qr.filter(q => q.url),
             };
 
             if (initialData) {
@@ -246,6 +244,7 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
                     since: initialData.aboutUs?.since || "",
                     highlights: initialData.aboutUs?.highlights ?? [],
                 },
+                qr: (initialData.qr ?? []).map((q: any) => ({ url: q.url || "", label: q.label || "" })),
                 // footer: {
                 //     logoUrl: initialData.footer?.logoUrl || "",
                 //     brandName: initialData.footer?.brandName || "",
@@ -312,6 +311,9 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
         setFieldValue("aboutUs.highlights", [...values.aboutUs.highlights, { label: "", value: "" }]);
     const removeHighlight = (i: number) =>
         setFieldValue("aboutUs.highlights", values.aboutUs.highlights.filter((_, idx) => idx !== i));
+
+    const addQr = () => setFieldValue("qr", [...values.qr, { url: "", label: "" }]);
+    const removeQr = (i: number) => setFieldValue("qr", values.qr.filter((_, idx) => idx !== i));
 
     // const addContact = () =>
     //     setFieldValue("footer.contacts", [...values.footer.contacts, { label: "", value: "" }]);
@@ -814,6 +816,69 @@ const AboutForm = ({ initialData, onCancel }: Props) => {
                             </div>
                         )}
                     </div> */}
+
+                    {/* ─── QR Codes ─────────────────────────────────────────────────── */}
+                    <div>
+                        <SectionHeader icon={QrCode} title="Payment QR Codes" />
+                        <div className="space-y-3">
+                            {/* Upload QR */}
+                            <div
+                                className={`relative border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center transition-all duration-200 cursor-pointer group ${
+                                    uploadingQr ? "border-primary/50 bg-primary/5" : "border-border hover:bg-muted/30 hover:border-primary/50"
+                                }`}
+                            >
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    disabled={uploadingQr}
+                                    onChange={async (e) => {
+                                        const files = e.target.files;
+                                        if (!files || files.length === 0) return;
+                                        setUploadingQr(true);
+                                        try {
+                                            const uploaded = await uploadFilesToSupabase(Array.from(files) as File[]);
+                                            const newQrs = uploaded.map(u => ({ url: u.url, label: "" })).filter(q => q.url);
+                                            setFieldValue("qr", [...values.qr, ...newQrs]);
+                                            toast.success("QR uploaded successfully");
+                                        } catch (err: any) {
+                                            toast.error(err?.message || "QR upload failed");
+                                        } finally {
+                                            setUploadingQr(false);
+                                            e.target.value = "";
+                                        }
+                                    }}
+                                />
+                                <QrCode className="w-8 h-8 text-muted-foreground mb-2" />
+                                <p className="text-sm font-semibold text-foreground">
+                                    {uploadingQr ? "Uploading QR..." : "Click to upload QR images"}
+                                </p>
+                                <p className="text-xs text-muted-foreground">Upload one or multiple payment QR codes</p>
+                            </div>
+
+                            {values.qr.map((q, i) => (
+                                <div key={i} className="flex gap-2 items-start p-3 rounded-lg border border-border bg-muted/30">
+                                    {q.url && (
+                                        <img src={q.url} alt="QR" className="w-16 h-16 object-contain rounded border border-border bg-white flex-shrink-0" />
+                                    )}
+                                    <div className="flex-1">
+                                        <label className={labelClass}>Label (optional)</label>
+                                        <input
+                                            name={`qr[${i}].label`}
+                                            value={q.label}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            placeholder="e.g. UPI / PhonePe"
+                                            className={inputClass}
+                                        />
+                                    </div>
+                                    <RemoveButton onClick={() => removeQr(i)} />
+                                </div>
+                            ))}
+                            <AddButton label="Add QR manually" onClick={addQr} />
+                        </div>
+                    </div>
 
                     {/* ─── Actions ──────────────────────────────────────────────────── */}
                     <div className="flex gap-3 pt-2 border-t border-border">
