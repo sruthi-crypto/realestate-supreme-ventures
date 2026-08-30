@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { CheckCircle, Loader2, RefreshCw, Ticket } from "lucide-react";
+import { CheckCircle, Loader2, Lock, RefreshCw, Ticket } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const BASE = (import.meta.env.VITE_API_BASE_URL as string).replace(/\/+$/, "");
 
@@ -21,17 +22,21 @@ function formatDate(d: string) {
 }
 
 const AdminTickets = () => {
+  const navigate = useNavigate();
+  const adminToken = localStorage.getItem("token");
+  const isAdminLoggedIn = !!adminToken;
+
   const [tickets, setTickets] = useState<TicketRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(isAdminLoggedIn);
   const [error, setError] = useState("");
 
   const fetchTickets = async () => {
+    if (!adminToken) return;
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("token");
       const res = await fetch(`${BASE}/tickets`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${adminToken}` },
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to fetch tickets");
@@ -43,12 +48,36 @@ const AdminTickets = () => {
     }
   };
 
-  useEffect(() => { fetchTickets(); }, []);
+  useEffect(() => { if (isAdminLoggedIn) fetchTickets(); }, []);
 
   return (
     <div className="min-h-screen py-8" style={{ background: "hsl(40,33%,98%)" }}>
       <div className="container max-w-6xl mx-auto px-4">
 
+        {/* ── Not logged in gate ── */}
+        {!isAdminLoggedIn && (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style={{ background: "hsl(152,55%,32%,0.1)" }}>
+              <Lock className="w-8 h-8" style={{ color: "hsl(152,55%,32%)" }} />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: "hsl(152,55%,32%)" }}>Admin Access Required</p>
+            <h2 className="font-display text-2xl font-bold text-foreground mb-2">Ticket Bookings</h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-xs">
+              You need to be logged in as an admin to view ticket bookings.
+            </p>
+            <button
+              onClick={() => navigate("/login")}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+              style={{ background: "linear-gradient(135deg, hsl(152,55%,32%), hsl(145,47%,45%))" }}
+            >
+              Login as Admin
+            </button>
+          </div>
+        )}
+
+        {/* ── Authenticated view ── */}
+        {isAdminLoggedIn && (
+          <>
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
@@ -150,6 +179,8 @@ const AdminTickets = () => {
               All tickets are confirmed payments via Telegram Stars
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
     </div>

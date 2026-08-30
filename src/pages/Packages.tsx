@@ -1,6 +1,6 @@
 import { CheckCircle, ExternalLink, Loader2, Lock, Star, Ticket } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const BASE = (import.meta.env.VITE_API_BASE_URL as string).replace(/\/+$/, "");
 
@@ -34,6 +34,7 @@ const Packages = () => {
   const navigate = useNavigate();
   const userToken = localStorage.getItem("user_token");
   const isLoggedIn = !!userToken;
+  const isAdmin = !!localStorage.getItem("token");
 
   const [packages, setPackages] = useState<Package[]>([]);
   const [pkgLoading, setPkgLoading] = useState(true);
@@ -110,6 +111,21 @@ const Packages = () => {
           </p>
           <div className="h-1 w-16 rounded-full mx-auto mt-4" style={{ background: "linear-gradient(90deg, hsl(152,55%,32%), hsl(145,47%,45%))" }} />
         </div>
+
+        {/* Admin shortcut */}
+        {isAdmin && (
+          <Link
+            to="/admin/tickets"
+            className="flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-semibold transition-all hover:-translate-y-0.5"
+            style={{ borderColor: "hsl(152,55%,32%,0.3)", background: "hsl(152,55%,32%,0.05)", color: "hsl(152,55%,32%)" }}
+          >
+            <span className="flex items-center gap-2">
+              <Ticket className="w-4 h-4" />
+              View All Ticket Bookings (Admin)
+            </span>
+            <span className="text-xs opacity-60">→</span>
+          </Link>
+        )}
 
         {/* ── Error ── */}
         {pkgError && (
