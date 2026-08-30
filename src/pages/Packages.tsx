@@ -4,6 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 const BASE = (import.meta.env.VITE_API_BASE_URL as string).replace(/\/+$/, "");
 
+export function getTelegramBotUrl(botUsername: string, startParam?: string): string {
+  const cleanedUsername = (botUsername || "").trim().replace(/^@+/, "").replace(/\/+$/, "");
+  if (!cleanedUsername) return "";
+
+  const baseUrl = `https://t.me/${cleanedUsername}`;
+  return startParam ? `${baseUrl}?start=${encodeURIComponent(startParam)}` : baseUrl;
+}
+
 interface Package {
   id: string;
   name: string;
@@ -66,7 +74,7 @@ const Packages = () => {
     })
       .then(r => r.json())
       .then(res => { if (res.success) setTickets(res.data || []); })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setTicketsLoading(false));
   }, [isLoggedIn, userToken]);
 
@@ -93,7 +101,15 @@ const Packages = () => {
   };
 
   const openTelegram = () => {
-    if (deepLink) window.open(deepLink.link, "_blank");
+    if (!deepLink?.link) return;
+
+    const telegramUrl = new URL(deepLink.link);
+    if (telegramUrl.protocol === "https:" && telegramUrl.hostname === "t.me") {
+      window.location.href = telegramUrl.toString();
+      return;
+    }
+
+    window.location.href = deepLink.link;
   };
 
   return (
