@@ -112,6 +112,8 @@ const Packages = () => {
     window.location.href = deepLink.link;
   };
 
+  const telegramInstallHint = "Telegram app required for Stars payment. Please install Telegram and tap the button again.";
+
   return (
     <div className="min-h-screen py-12 px-4" style={{ background: "hsl(40,33%,98%)" }}>
       <div className="max-w-3xl mx-auto space-y-12">
@@ -264,6 +266,12 @@ const Packages = () => {
               Open Telegram & Pay ⭐ {selected?.stars}
             </button>
             <p className="text-[10px] text-muted-foreground mt-4">
+              {telegramInstallHint}
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-2">
+              Order ID: <span className="font-semibold">{deepLink.orderId}</span>
+            </p>
+            <p className="text-[10px] text-muted-foreground mt-2">
               After payment, your ticket will appear below automatically. Refresh this page to see it.
             </p>
             <button
