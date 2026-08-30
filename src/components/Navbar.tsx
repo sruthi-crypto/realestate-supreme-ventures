@@ -1,15 +1,31 @@
-import { Building2, Menu, X } from "lucide-react";
+import { Building2, LogOut, Menu, User, X } from "lucide-react";
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const location = useLocation();
-
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const userToken = localStorage.getItem("user_token");
+  const userPhone = localStorage.getItem("user_phone");
+  const isLoggedIn = !!userToken;
+  const isAdmin = !!localStorage.getItem("token");
+
+  const handleLogout = () => {
+    localStorage.removeItem("user_token");
+    localStorage.removeItem("user_phone");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("user_role");
+    setMobileOpen(false);
+    navigate("/");
+  };
 
   const links = [
     { to: "/", label: "Properties" },
     { to: "/about", label: "About" },
+    { to: "/packages", label: "Packages" },
+    ...(isAdmin ? [{ to: "/admin/tickets", label: "Ticket Bookings" }] : []),
   ];
 
   return (
@@ -28,8 +44,9 @@ const Navbar = () => {
             <Link
               key={l.to}
               to={l.to}
-              className={`text-sm font-medium transition-all duration-300 relative hover:text-primary ${location.pathname === l.to ? "text-primary font-semibold" : "text-muted-foreground"
-                }`}
+              className={`text-sm font-medium transition-all duration-300 relative hover:text-primary ${
+                location.pathname === l.to ? "text-primary font-semibold" : "text-muted-foreground"
+              }`}
             >
               {l.label}
               {location.pathname === l.to && (
@@ -38,6 +55,27 @@ const Navbar = () => {
             </Link>
           ))}
 
+          {isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <User className="w-3.5 h-3.5" />
+                {userPhone}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" /> Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/user-login"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -58,15 +96,37 @@ const Navbar = () => {
               key={l.to}
               to={l.to}
               onClick={() => setMobileOpen(false)}
-              className={`block text-sm font-medium transition-colors duration-300 py-2 px-3 rounded-lg ${location.pathname === l.to
-                ? "text-primary bg-primary/10"
-                : "text-foreground hover:text-primary hover:bg-muted"
-                }`}
+              className={`block text-sm font-medium transition-colors duration-300 py-2 px-3 rounded-lg ${
+                location.pathname === l.to
+                  ? "text-primary bg-primary/10"
+                  : "text-foreground hover:text-primary hover:bg-muted"
+              }`}
             >
               {l.label}
             </Link>
           ))}
 
+          {isLoggedIn ? (
+            <div className="space-y-2">
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground px-3">
+                <User className="w-3.5 h-3.5" /> {userPhone}
+              </p>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 w-full rounded-lg border border-border px-3 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" /> Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/user-login"
+              onClick={() => setMobileOpen(false)}
+              className="block rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground"
+            >
+              Sign in
+            </Link>
+          )}
         </div>
       )}
     </nav>

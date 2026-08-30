@@ -19,6 +19,8 @@ import updateAboutReducer from "../slices/update-about";
 import deleteAboutReducer from "../slices/delete-about";
 
 import uploadImagesReducer from "../slices/upload-images";
+import userLoginReducer from "../slices/user-auth-login";
+import userRegisterReducer from "../slices/user-auth-register";
 
 const rootReducer = combineReducers({
   loginReducer, registerReducer, setupReducer, verifySetupReducer, resetReducer, getAllUsersReducer,
@@ -32,6 +34,8 @@ const rootReducer = combineReducers({
   updateAboutReducer,
   deleteAboutReducer,
   uploadImagesReducer,
+  userLoginReducer,
+  userRegisterReducer,
 });
 
 export default rootReducer;

@@ -23,6 +23,9 @@ import AdminLayout from "@/components/layouts/AdminLayout";
 import AboutFormPage from "./pages/AboutFormPage";
 import { AdminUsers } from "./pages/AdminUsers";
 import ProtectedRoute from "./components/layouts/ProtectedRoute";
+import UserAuth from "./pages/UserAuth";
+import Packages from "./pages/Packages";
+import AdminTickets from "./pages/AdminTickets";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +49,8 @@ const App = () => (
                     <Route path="/properties/:id" element={<ProductDetail />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/user-login" element={<UserAuth />} />
+                    <Route path="/packages" element={<Packages />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/terms-conditions" element={<TermsConditions />} />
                   </Route>
@@ -57,6 +62,7 @@ const App = () => (
                       <Route path="/product-form" element={<ProductFormPage />} />
                       <Route path="/admin/about/edit" element={<AboutFormPage />} />
                       <Route path="/admin-users" element={<AdminUsers />} />
+                      <Route path="/admin/tickets" element={<AdminTickets />} />
                     </Route>
                   </Route>
 

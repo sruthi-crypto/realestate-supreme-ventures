@@ -1,4 +1,6 @@
 import { loginAction, clearLoginAction } from "../slices/auth-login";
+import { userLoginAction, clearUserLoginAction } from "../slices/user-auth-login";
+import { userRegisterAction, clearUserRegisterAction } from "../slices/user-auth-register";
 import { registerAction, clearRegisterAction } from "../slices/auth-register";
 import { setupAction, clearSetupAction } from "../slices/auth-setup";
 import { verifySetupAction, clearVerifySetupAction } from "../slices/auth-verify-setup";
@@ -33,4 +35,6 @@ export {
   updateAboutAction, clearUpdateAboutAction,
   deleteAboutAction, clearDeleteAboutAction,
   uploadImagesAction, clearUploadImagesAction,
+  userLoginAction, clearUserLoginAction,
+  userRegisterAction, clearUserRegisterAction,
 };

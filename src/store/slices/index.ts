@@ -184,8 +184,11 @@ export default function sliceCreator<T extends object | undefined, R>(
         return response;
 
       } catch (err: any) {
-        // if 401 — only force logout if it's NOT the login endpoint itself
-        if (err.response?.status === 401 && !finalEndpoint.includes("login")) {
+        // User sign-in/sign-up failures must stay on the user-auth screen.
+        // Only protected admin requests should clear the admin session and redirect.
+        const isAuthenticationEndpoint =
+          finalEndpoint.includes("login") || finalEndpoint.startsWith("user-auth/");
+        if (err.response?.status === 401 && !isAuthenticationEndpoint) {
           if (typeof window !== "undefined") {
             localStorage.clear();
             window.location.href = "/login";
