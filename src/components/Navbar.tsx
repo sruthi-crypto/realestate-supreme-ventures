@@ -22,10 +22,10 @@ const Navbar = () => {
   };
 
   const links = [
-    { to: "/", label: "Properties" },
+    ...(isAdmin ? [{ to: "/admin", label: "Manage Properties" }] : [{ to: "/", label: "Properties" }]),
     { to: "/about", label: "About" },
-    { to: "/packages", label: "Packages" },
     ...(isAdmin ? [{ to: "/admin/tickets", label: "Ticket Bookings" }] : []),
+    ...(isAdmin ? [{ to: "/admin/integrations", label: "Payments & Telegram" }] : []),
   ];
 
   return (
@@ -44,9 +44,8 @@ const Navbar = () => {
             <Link
               key={l.to}
               to={l.to}
-              className={`text-sm font-medium transition-all duration-300 relative hover:text-primary ${
-                location.pathname === l.to ? "text-primary font-semibold" : "text-muted-foreground"
-              }`}
+              className={`text-sm font-medium transition-all duration-300 relative hover:text-primary ${location.pathname === l.to ? "text-primary font-semibold" : "text-muted-foreground"
+                }`}
             >
               {l.label}
               {location.pathname === l.to && (
@@ -96,11 +95,10 @@ const Navbar = () => {
               key={l.to}
               to={l.to}
               onClick={() => setMobileOpen(false)}
-              className={`block text-sm font-medium transition-colors duration-300 py-2 px-3 rounded-lg ${
-                location.pathname === l.to
-                  ? "text-primary bg-primary/10"
-                  : "text-foreground hover:text-primary hover:bg-muted"
-              }`}
+              className={`block text-sm font-medium transition-colors duration-300 py-2 px-3 rounded-lg ${location.pathname === l.to
+                ? "text-primary bg-primary/10"
+                : "text-foreground hover:text-primary hover:bg-muted"
+                }`}
             >
               {l.label}
             </Link>
